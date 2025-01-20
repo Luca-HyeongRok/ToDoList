@@ -26,7 +26,7 @@ const mockData = [
 ];
 
 function App() {
-  const [todos, setTodos] = useState([mockData]);
+  const [todos, setTodos] = useState(mockData);
   const idRef = useRef(3);
 
   const onCreate = (content) => {
@@ -39,11 +39,29 @@ function App() {
 
     setTodos([newTodo, ...todos]);
   };
+
+  const onUpdate = (targetId) =>
+    // todos State 값들 중 targetId와 일치하는 id를 갖는 투두 아이템의 isDone 변경
+    // 인수 : todos 배열에서 targetId와 일치하는 id를 갖는 요소의 데이터만 딱 바꾼 새로운 배열
+    setTodos(
+      todos.map(
+        (todo) =>
+          todo.id === targetId
+            ? { ...todo, isDone: !todo.isDone } // id가 일치하면 isDone 값 반전
+            : todo // 일치하지 않으면 그대로 유지
+      )
+    );
+
+  const onDelete = (targetId) => {
+    // 인수 : todos 배열에서 targetId와 일치하는 id를 갖는 요소만 삭제한 새로운 배열
+    setTodos(todos.filter((todo) => todo.id !== targetId)); // 모든 투두를 한 번씩 순회하면서 삼항 연산자로 투두 id 값이 target id 와 같지 않은 녀석만 필터링
+  };
+
   return (
     <div className="App">
       <Header />
       <Editor onCreate={onCreate} />
-      <List todos={todos} />
+      <List todos={todos} onUpdate={onUpdate} onDelete={onDelete} />
     </div>
   );
 }
